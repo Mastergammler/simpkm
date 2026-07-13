@@ -2,6 +2,9 @@
 #include <string/macros.h>
 #include <string/module.h>
 
+// TASKLIST: [0/1]
+//  - parse also when on top of [[ or ]]
+
 static StringMemory Strings;
 
 #define PRINT_DEBUG 0
