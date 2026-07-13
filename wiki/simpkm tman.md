@@ -54,6 +54,7 @@ Can also show kind of milestones
     - [x] Next ticket number function (last item in folder)
     - [x] Create a note in tickets folder (vault option)
 - [ ] Show a ticket list (open tickets in maybe in quick fix?)
+- [ ] Close ticket (change Tag + add timestamp)
 
 **Improvements**
 - [ ] Auto adding alias for ticket -> *Ticket-124* etc

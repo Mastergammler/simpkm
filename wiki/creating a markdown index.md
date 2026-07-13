@@ -1,5 +1,5 @@
 
-- [ ] just query all file-names in the directory (recursively)
+- [x] just query all file-names in the directory (recursively)
 - [ ] split the names at space
 - [ ] create a entry on the index for each of the sub parts
 - [ ] parse all the links to capture uncreated ones as well!
@@ -26,11 +26,11 @@ the - [0]
 
 ### Create Index
 **Steps**
-- [ ] Get all file names of the dir
-- [ ] Create index based on files only
-- [ ] Parse frontmatter of files (get aliases & include in index)
+- [x] Get all file names of the dir
+- [x] Create index based on files only
+- [ ] ~~Parse frontmatter of files (get aliases & include in index)~~
 - [ ] Parse all files & match add uncreated links
-- [ ] Keep the index file up to date somehow (file change times etc?)
+- [ ] ~~Keep the index file up to date somehow (file change times etc?)~~
 
 ### Integration
 - [ ] Function to read & filter index file based on prefix (quicksearch|sorted index)
@@ -42,3 +42,9 @@ the - [0]
  => Because traversing the index should be super fast, to keep the data very small there
 - But the small caveat is, that in order to be able to do this, the binary file is a bit harder to write
  -> Because [[variable length entries]] (lists to files etc)
+
+ **Aliases**
+I don't need to use the frontmatter necessarly anymore, i can just parse the used links
+So i just read all the links, which might be easier actually, i can ignore the [[frontmatter]] completely.
+Because i need to parse all files anyways to have also uncreated files there.
+I guess for now this is the first step, so a can omit the aliases right away

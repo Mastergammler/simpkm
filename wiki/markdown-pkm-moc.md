@@ -28,8 +28,10 @@
 - [x] Goto-file
 - [x] Insert template
 - [x] Open daily note (+ template)
-- [ ] Create new note -> just `ene`?
+- [ ] Create new note -> just `ene`? (Dosn't work well for spaces)
 - [ ] Open Daily/Weekly notes -> create all that are needed
+- [ ] Rename & link update fatures
+- [ ] Add alias to link under cursor
 
 ### Secondary features
 - [ ] Page structure
@@ -52,7 +54,7 @@
     - [ ] File names etc
 
 # Shortcuts etc
-- [ ] Prev/next funciton for every note (check for prev/next text)
+- [ ] Prev/next function for every note (check for prev/next text)
 
 ### Advanced Features
 - [ ] Creating column like plugin (nvim interaction stuff etc)                 

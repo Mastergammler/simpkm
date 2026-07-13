@@ -1,9 +1,13 @@
-
-
 default: build
 
 build: build.ninja
 	@ninja
 
-run: build
-	@.build/pkmp "This is my text [[special|don't show]] line with a [[link]] in it" 30 
+.PHONEY: run
+run: index
+
+index: build
+	@.build/pkmp index wiki
+
+link: build
+	@.build/pkmp link "This is my text [[special|don't show]] line with a [[link]] in it" 30 

@@ -4,7 +4,8 @@ mglibc = mglibc
 
 mgsrc = $$MGLIBC_STRINGS
 # tcc doesn't have debug info ...
-toolchain = tcc
+toolchain = clang 
+#tcc
 
 rule cc
     command = $toolchain $cflags -MD -MF $out.d -c -o $out $in $includes
