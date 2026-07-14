@@ -10,7 +10,7 @@ void write_dir_entry(IndexDir dirEntry)
            IndexState.paths_file);
     fputc(NL, IndexState.paths_file);
 
-    str_pool_reset(IndexState.str_opt.pool);
+    str_pool_reset(IndexState.str_opt);
 }
 
 void write_file_entry(IndexEntry entry)
@@ -26,7 +26,7 @@ void write_file_entry(IndexEntry entry)
     fwrite(nums.chars, 1, nums.len, IndexState.index_file);
     fputc(NL, IndexState.index_file);
 
-    str_pool_reset(IndexState.str_opt.pool);
+    str_pool_reset(IndexState.str_opt);
 }
 
 int search_dir(IndexDir dir)
@@ -48,7 +48,7 @@ int search_dir(IndexDir dir)
 
         if (entry->d_type == DT_DIR)
         {
-            StrPoolOptions frame = {.pool = &Strings.frame_buffer};
+            StrPoolOptions frame = {.pool_idx = POOL_DEFAULT};
             str dirName = str_alloc_opt(frame, entry->d_name);
             DEBUG("DIR: %", STR(dirName));
             // transient string buffer etc
@@ -57,30 +57,29 @@ int search_dir(IndexDir dir)
             IndexDir subdir = {IndexState.next_dir_idx++, subdirPath};
             write_dir_entry(subdir);
             search_dir(subdir);
-            str_pool_reset(frame.pool);
+            str_pool_reset(frame);
         }
         else
         {
             str fileName = str_alloc_opt(IndexState.str_opt, entry->d_name);
 
-            // PERF: adding this one thing, increses the index
-            // creation time by 20x, no clue why this is soo heavy
-            // it should just be 3 char comparisons???
-            //
-            // if (str_ends_with(fileName, mdSuff))
-            //{
-            DEBUG("FILE: %", STR(fileName));
-
-            // TODO: should be also transient
-            StrSplitResult split = str_split_last(fileName, '.');
-            IndexEntry indEnt = {.name = split.head,
-                                 .file_name = dupSymbol,
-                                 .dir_id = dir.dir_id,
-                                 .is_alias = false,
-                                 .file_exists = true};
-            write_file_entry(indEnt);
-            IndexState.file_count++;
-            //}
+            // PERF: I had probably a TLB miss here, is was using
+            //  256 B pool sizes for the allocation
+            //  The time for adding the ends_with lookup increased runtime
+            //  by around 20x
+            bool isMd = str_ends_with(fileName, mdSuff);
+            if (isMd)
+            {
+                DEBUG("FILE: %", STR(fileName));
+                StrSplitResult split = str_split_last(fileName, '.');
+                IndexEntry indEnt = {.name = split.head,
+                                     .file_name = dupSymbol,
+                                     .dir_id = dir.dir_id,
+                                     .is_alias = false,
+                                     .file_exists = true};
+                write_file_entry(indEnt);
+                IndexState.file_count++;
+            }
         }
     }
 
@@ -90,7 +89,7 @@ int search_dir(IndexDir dir)
 CmdResult cmd_create_index(str searchPath)
 {
     IndexState = (IndexStateData){};
-    IndexState.str_opt = (StrPoolOptions){.pool = &Strings.persistent};
+    IndexState.str_opt = (StrPoolOptions){.pool_idx = POOL_TRANSIENT};
 
     // TODO: needs to be specified by the caller?!
     str indexFile = str_static(".index");
@@ -105,8 +104,8 @@ CmdResult cmd_create_index(str searchPath)
 
     search_dir(basePath);
 
-    str_pool_reset(&Strings.transient);
-    str_pool_reset(&Strings.frame_buffer);
+    str_pool_reset((StrPoolOptions){POOL_TRANSIENT});
+    str_pool_reset((StrPoolOptions){POOL_DEFAULT});
     fclose(IndexState.index_file);
     fclose(IndexState.paths_file);
 

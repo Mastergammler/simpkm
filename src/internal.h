@@ -25,6 +25,14 @@ const char NL = '\n';
 
 typedef enum
 {
+    POOL_DEFAULT,
+    POOL_PRINT,
+    POOL_TRANSIENT,
+    POOL_count
+} StrPools;
+
+typedef enum
+{
     RES_OK,
     RES_UNKNOWN_COMMAND,
     RES_INSUFFICIENT_ARGUMENTS,
