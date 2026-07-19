@@ -1,10 +1,11 @@
 # Markdown PKM MOC
 
-#tags/also
-#pkm
+#tags/also #pkm
 
 [[simpkm]]
 [[creating a markdown index]]
+[[vault tag index]]
+[[handling impages]]
 
 ### Basic Features
 - [x] basic text coloring
@@ -16,10 +17,10 @@
 - [x] Adding vault options for base path (project wikis)
 - [x] Insert templates
 - [ ] cmp for tags
-- [ ] Basic command features (daily note ?)
+- [x] Basic command features (daily note ?)
 
 **Follow Links**
-- [ ] Trim spaces
+- [x] Trim spaces
 - [ ] Case sensitivity handling
 - [ ] Search subfolder for filename also (cuz obsidian does this)
 
@@ -31,7 +32,7 @@
 - [ ] Create new note -> just `ene`? (Dosn't work well for spaces)
 - [ ] Open Daily/Weekly notes -> create all that are needed
 - [ ] Rename & link update fatures
-- [ ] Add alias to link under cursor
+- [ ] ~~Add alias to link under cursor~~ -> Just type it with `|alias]]`
 
 ### Secondary features
 - [ ] Page structure

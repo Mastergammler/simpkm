@@ -7,15 +7,18 @@
 
 #include <dirent.h>
 
-// TASKLIST: [0/1]
-//  - parse also when on top of [[ or ]]
+// TASKLIST: [1/1]
+//  ✔ parse also when on top of [[ or ]]
 
-static StringMemory Strings;
+static StringMemory* Strings;
 
 #define PRINT_DEBUG 0
 
 #define DEBUG(cstr, ...)                                                       \
     if (PRINT_DEBUG) str_printc(cstr, ##__VA_ARGS__)
+
+#define not(cond) !(cond)
+#define DUP_SYM str_static("\"")
 
 const char LINK_START = '[';
 const char LINK_END = ']';
@@ -45,6 +48,13 @@ typedef struct
     ResultCode code;
     str cmd_result;
 } CmdResult;
+
+typedef struct
+{
+    bool found;
+    str link;
+    str alias;
+} LinkResult;
 
 typedef struct
 {
@@ -79,8 +89,11 @@ typedef struct
 
 typedef struct
 {
-    FILE* index_file;
-    FILE* paths_file;
+    str index_file;
+    str paths_file;
+
+    FILE* index;
+    FILE* paths;
     uint next_dir_idx;
     uint file_count;
     StrPoolOptions str_opt;
@@ -88,5 +101,8 @@ typedef struct
 } IndexStateData;
 
 static IndexStateData IndexState;
+
+LinkResult parse_link(str text, int cursorPos);
+void write_file_entry(IndexEntry entry, FILE* out);
 
 #endif // simpkm internal

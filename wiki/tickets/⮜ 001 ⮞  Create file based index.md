@@ -2,7 +2,7 @@
 created: 2026-07-13T09:10
 finished: 2026-07-13T22:02
 ---
-#state/closed
+#ticket/closed
 
 ## Tasks
 - [x] Integrate multiple cmd line options

@@ -19,4 +19,7 @@ Testing out a new pkm approach, that is simpler than before
 
 How does it look if i a [[vimbasic]] is within a block?
 
+## Test Files
+[[Test - different kind of links]]
+
 

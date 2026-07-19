@@ -2,7 +2,7 @@
 created: <% now %>
 finished: 
 ---
-#state/open
+#ticket/open
 
 ## Tasks
 
