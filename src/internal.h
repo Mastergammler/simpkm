@@ -13,12 +13,17 @@
 static StringMemory* Strings;
 
 #define PRINT_DEBUG 0
+#define PRINT_TRACE 0
 
 #define DEBUG(cstr, ...)                                                       \
     if (PRINT_DEBUG) str_printc(cstr, ##__VA_ARGS__)
 
+#define TRACE(cstr, ...)                                                       \
+    if (PRINT_TRACE) str_printc(cstr, ##__VA_ARGS__)
+
 #define not(cond) !(cond)
 #define DUP_SYM str_static("\"")
+#define EXCLUDE_DIR_START str_static(".")
 
 const char LINK_START = '[';
 const char LINK_END = ']';
@@ -29,6 +34,7 @@ const char NL = '\n';
 typedef enum
 {
     POOL_DEFAULT,
+    POOL_FILE,
     POOL_PRINT,
     POOL_TRANSIENT,
     POOL_count
@@ -96,7 +102,11 @@ typedef struct
     FILE* paths;
     uint next_dir_idx;
     uint file_count;
-    StrPoolOptions str_opt;
+
+    // NOTE: files and dirs have different lifetimes
+    //-> So they need to have their own pool!
+    StrPoolOptions file_pool;
+    StrPoolOptions dir_pool;
 
 } IndexStateData;
 

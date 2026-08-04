@@ -3,18 +3,18 @@
 void write_dir_entry(IndexDir dirEntry)
 {
     // TODO: int does not support uint yet?!
-    str num = str_formatc_opt(IndexState.str_opt, "%", NUM(dirEntry.dir_id));
+    str num = str_formatc_opt(IndexState.file_pool, "%", NUM(dirEntry.dir_id));
     fwrite(num.chars, 1, num.len, IndexState.paths);
     fputc(INDEX_COL_DELIM, IndexState.paths);
     fwrite(dirEntry.dir_path.chars, 1, dirEntry.dir_path.len, IndexState.paths);
     fputc(NL, IndexState.paths);
 
-    str_pool_reset(IndexState.str_opt);
+    str_pool_reset(IndexState.file_pool);
 }
 
 void write_file_entry(IndexEntry entry, FILE* out)
 {
-    str nums = str_formatc_opt(IndexState.str_opt, "%:%:%", NUM(entry.dir_id),
+    str nums = str_formatc_opt(IndexState.file_pool, "%:%:%", NUM(entry.dir_id),
                                NUM(entry.is_alias), NUM(entry.file_exists));
 
     fwrite(entry.name.chars, 1, entry.name.len, out);
@@ -24,7 +24,7 @@ void write_file_entry(IndexEntry entry, FILE* out)
     fwrite(nums.chars, 1, nums.len, out);
     fputc(NL, out);
 
-    str_pool_reset(IndexState.str_opt);
+    str_pool_reset(IndexState.file_pool);
 }
 
 int search_dir(IndexDir dir)
@@ -46,20 +46,29 @@ int search_dir(IndexDir dir)
 
         if (entry->d_type == DT_DIR)
         {
-            StrPoolOptions frame = {.pool_idx = POOL_DEFAULT};
-            str dirName = str_alloc_opt(frame, entry->d_name);
-            DEBUG("DIR: %", STR(dirName));
-            // transient string buffer etc
-            str subdirPath =
-                str_formatc_opt(frame, "%/%", STR(dir.dir_path), STR(dirName));
+            // Excluding directories starting with '.' by default,
+            // because those almost never hold important files for us
+            if (entry->d_name[0] == '.') continue;
+
+            uint64_t prevPos =
+                Strings->pools[IndexState.dir_pool.pool_idx].cursor_idx;
+            str dirName = str_alloc_opt(IndexState.dir_pool, entry->d_name);
+            DEBUG("DIR: %/%", STR(dir.dir_path), STR(dirName));
+            str subdirPath = str_formatc_opt(IndexState.dir_pool, "%/%",
+                                             STR(dir.dir_path), STR(dirName));
             IndexDir subdir = {IndexState.next_dir_idx++, subdirPath};
             write_dir_entry(subdir);
             search_dir(subdir);
-            str_pool_reset(frame);
+
+            // NOTE: for recursive traversal WE CAN NOT reset the whole pool.
+            //  We use this like a stack instead, and just pop the end, after
+            //  we finished: Recursion == Stack behaviour
+            str_pool_reset_to(IndexState.dir_pool, prevPos);
         }
         else
         {
-            str fileName = str_alloc_opt(IndexState.str_opt, entry->d_name);
+            str fileName = str_alloc_opt(IndexState.file_pool, entry->d_name);
+            TRACE("Checking file: %", STR(fileName));
 
             // PERF: I had probably a TLB miss here, is was using
             //  256 B pool sizes for the allocation
@@ -78,6 +87,8 @@ int search_dir(IndexDir dir)
                 write_file_entry(indEnt, IndexState.index);
                 IndexState.file_count++;
             }
+
+            str_pool_reset(IndexState.file_pool);
         }
     }
 
@@ -96,8 +107,8 @@ CmdResult cmd_create_index(str searchPath)
 
     search_dir(basePath);
 
-    str_pool_reset((StrPoolOptions){POOL_TRANSIENT});
-    str_pool_reset((StrPoolOptions){POOL_DEFAULT});
+    str_pool_reset(IndexState.dir_pool);
+    str_pool_reset(IndexState.file_pool);
     fclose(IndexState.index);
     fclose(IndexState.paths);
 

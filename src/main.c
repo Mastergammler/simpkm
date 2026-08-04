@@ -65,6 +65,7 @@ void init_program(uint64_t memory)
 
     str_pool_prepare(Prog.mem, &Prog.strings, POOL_count);
     define_pool(POOL_DEFAULT, 2024, .is_default = true);
+    define_pool(POOL_FILE, 256);
     define_pool(POOL_PRINT, 256, .is_print = true);
     define_pool(POOL_TRANSIENT, 256, .is_transient = true);
     str_pool_finalize(Prog.mem);
@@ -75,7 +76,8 @@ int main(int argc, char** argv)
     init_program(4096);
 
     IndexState = (IndexStateData){};
-    IndexState.str_opt = (StrPoolOptions){.pool_idx = POOL_TRANSIENT};
+    IndexState.file_pool = (StrPoolOptions){.pool_idx = POOL_FILE};
+    IndexState.dir_pool = (StrPoolOptions){.pool_idx = POOL_DEFAULT};
     IndexState.index_file = str_static(".index");
     IndexState.paths_file = str_static(".index_paths");
     CmdResult res = handle_args(argc, argv);

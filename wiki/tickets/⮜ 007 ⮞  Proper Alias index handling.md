@@ -1,8 +1,8 @@
 ---
 created: 2026-07-21T17:29
-finished: 
+finished: 2026-08-04T10:21
 ---
-#ticket/open
+#ticket/close
 
 ## Tasks
 - [x] Integrate index creation into the functions
@@ -10,7 +10,6 @@ finished:
 - [~] ~~Run async? (only create files at first)~~ -> the index task is very 
 - [~] ~Filter matched files (it's too much for [[nvim-cmp]]~
 - [x] Dedup alias to the link directly
-- [x] Index write in same buffer issue
 
 ## Description
 The basic functionality works, the problem is just, in the main vault, 
@@ -49,9 +48,12 @@ finished.
 
 ### [[Deduplicating the index]]
 
+
 *Index write in same buffer*
 I had this issue where the data in the index file suddenly was corrupted.
 It looked like i wrote some of the expansions into it (-> I should really fix 
 the expansion behaviour ot some point, it makes handling pool handling more 
 [[complex]] and [[confusing]] ...)
+
+[[⮜ 011 ⮞  Root dir writing issue]] -> it still exists
 

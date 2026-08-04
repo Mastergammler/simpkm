@@ -4,10 +4,10 @@ build: build.ninja
 	@ninja
 
 .PHONEY: run
-run: alias
+run: index
 
 index: build
-	@.build/pkmp index wiki
+	@.build/pkmp index .
 	
 alias: build
 	@.build/pkmp alias .index_links
