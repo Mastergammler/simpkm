@@ -3,7 +3,7 @@
 void write_dir_entry(IndexDir dirEntry)
 {
     // TODO: int does not support uint yet?!
-    str num = str_formatc_opt(IndexState.file_pool, "%", NUM(dirEntry.dir_id));
+    str num = str_formatc_opt(IndexState.file_pool, "%", fmt_n(dirEntry.dir_id));
     fwrite(num.chars, 1, num.len, IndexState.paths);
     fputc(INDEX_COL_DELIM, IndexState.paths);
     fwrite(dirEntry.dir_path.chars, 1, dirEntry.dir_path.len, IndexState.paths);
@@ -14,8 +14,8 @@ void write_dir_entry(IndexDir dirEntry)
 
 void write_file_entry(IndexEntry entry, FILE* out)
 {
-    str nums = str_formatc_opt(IndexState.file_pool, "%:%:%", NUM(entry.dir_id),
-                               NUM(entry.is_alias), NUM(entry.file_exists));
+    str nums = str_formatc_opt(IndexState.file_pool, "%:%:%", fmt_n(entry.dir_id),
+                               fmt_n(entry.is_alias), fmt_n(entry.file_exists));
 
     fwrite(entry.name.chars, 1, entry.name.len, out);
     fputc(INDEX_COL_DELIM, out);
@@ -34,7 +34,7 @@ int search_dir(IndexDir dir)
     DIR* unixDir = opendir(dir.dir_path.chars);
     if (unixDir == NULL)
     {
-        str_printc("Unable to open directory: %", STR(dir.dir_path));
+        str_printc("Unable to open directory: %", fmt_s(dir.dir_path));
         return RES_FILE_IO_ERR;
     }
 
@@ -53,9 +53,9 @@ int search_dir(IndexDir dir)
             uint64_t prevPos =
                 Strings->pools[IndexState.dir_pool.pool_idx].cursor_idx;
             str dirName = str_alloc_opt(IndexState.dir_pool, entry->d_name);
-            DEBUG("DIR: %/%", STR(dir.dir_path), STR(dirName));
+            DEBUG("DIR: %/%", fmt_s(dir.dir_path), fmt_s(dirName));
             str subdirPath = str_formatc_opt(IndexState.dir_pool, "%/%",
-                                             STR(dir.dir_path), STR(dirName));
+                                             fmt_s(dir.dir_path), fmt_s(dirName));
             IndexDir subdir = {IndexState.next_dir_idx++, subdirPath};
             write_dir_entry(subdir);
             search_dir(subdir);
@@ -68,7 +68,7 @@ int search_dir(IndexDir dir)
         else
         {
             str fileName = str_alloc_opt(IndexState.file_pool, entry->d_name);
-            TRACE("Checking file: %", STR(fileName));
+            TRACE("Checking file: %", fmt_s(fileName));
 
             // PERF: I had probably a TLB miss here, is was using
             //  256 B pool sizes for the allocation
@@ -77,7 +77,7 @@ int search_dir(IndexDir dir)
             bool isMd = str_ends_with(fileName, mdExt);
             if (isMd)
             {
-                DEBUG("FILE: %", STR(fileName));
+                DEBUG("FILE: %", fmt_s(fileName));
                 StrSplitResult split = str_split_last(fileName, '.');
                 IndexEntry indEnt = {.name = split.head,
                                      .file_name = dupSymbol,
@@ -112,7 +112,7 @@ CmdResult cmd_create_index(str searchPath)
     fclose(IndexState.index);
     fclose(IndexState.paths);
 
-    DEBUG("Files: %", NUM(IndexState.file_count));
+    DEBUG("Files: %", fmt_n(IndexState.file_count));
 
     return (CmdResult){RES_OK};
 }

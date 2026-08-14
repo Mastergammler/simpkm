@@ -59,8 +59,9 @@ LinkInfo parse(str text, int cursorPos)
         info.has_alias = true;
     }
 
-    /*DEBUG("sPos: %, ePos: %, nStart: %, nEnd: %", NUM(info.start_pos),
-          NUM(info.end_pos), NUM(info.start_matches), NUM(info.end_matches));*/
+    /*DEBUG("sPos: %, ePos: %, nStart: %, nEnd: %", fmt_n(info.start_pos),
+          fmt_n(info.end_pos), fmt_n(info.start_matches),
+       fmt_n(info.end_matches));*/
 
     return info;
 };
@@ -84,16 +85,16 @@ LinkResult parse_link(str text, int cursorPos)
 
 CmdResult cmd_parse_link(str text, int cursorPos)
 {
-    DEBUG("Cursor %, Text len: %", NUM(cursorPos), NUM(text.len));
+    DEBUG("Cursor %, Text len: %", fmt_n(cursorPos), fmt_n(text.len));
 
     if (cursorPos < 0) return (CmdResult){RES_INVALID_CURSOR};
     if (text.len < cursorPos) return (CmdResult){RES_INVALID_CURSOR};
 
     LinkResult res = parse_link(text, cursorPos);
-    DEBUG("Link: >> % << alias '%'", STR(res.link), STR(res.alias));
+    DEBUG("Link: >> % << alias '%'", fmt_s(res.link), fmt_s(res.alias));
 
     // Serialized output
-    str_printc("%\n%\n%", BOO(res.found), STR(res.link), STR(res.alias));
+    str_printc("%\n%\n%", fmt_b(res.found), fmt_s(res.link), fmt_s(res.alias));
 
     return (CmdResult){RES_OK};
 }

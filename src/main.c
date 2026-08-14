@@ -67,7 +67,6 @@ void init_program(uint64_t memory)
     define_pool(POOL_DEFAULT, 2024, .is_default = true);
     define_pool(POOL_FILE, 256);
     define_pool(POOL_PRINT, 256, .is_print = true);
-    define_pool(POOL_TRANSIENT, 256, .is_transient = true);
     str_pool_finalize(Prog.mem);
 }
 
@@ -83,7 +82,7 @@ int main(int argc, char** argv)
     CmdResult res = handle_args(argc, argv);
 
     float programRuntime = timer_ms_since_start(&Prog.timer);
-    str_printc("%", FLOAT(programRuntime, 3));
+    str_printc("%", fmt_f(programRuntime, 3));
 
     return res.code;
 }

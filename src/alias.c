@@ -55,7 +55,7 @@ CmdResult cmd_create_alias_index(str grepFile, str outFile)
             if (ch == '\n' || eof)
             {
                 LinkResult res = parse_link(link, 0);
-                DEBUG("[%|%] of %", STR(res.link), STR(res.alias), STR(path));
+                DEBUG("[%|%] of %", fmt_s(res.link), fmt_s(res.alias), fmt_s(path));
 
                 if (res.found)
                 {

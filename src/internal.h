@@ -6,6 +6,7 @@
 #include <string/module.h>
 
 #include <dirent.h>
+#include <stdint.h>
 
 // TASKLIST: [1/1]
 //  ✔ parse also when on top of [[ or ]]
@@ -36,7 +37,6 @@ typedef enum
     POOL_DEFAULT,
     POOL_FILE,
     POOL_PRINT,
-    POOL_TRANSIENT,
     POOL_count
 } StrPools;
 
@@ -75,7 +75,7 @@ typedef struct
 
 typedef struct
 {
-    uint dir_id;
+    uint32_t dir_id;
     str dir_path;
 } IndexDir;
 
@@ -85,7 +85,7 @@ typedef struct
     str name;
     /* without path info and extension */
     str file_name;
-    uint dir_id;
+    uint32_t dir_id;
     /* if the current name represents an alias */
     bool is_alias;
     /* if the current files is a created link or actually exists */
@@ -100,8 +100,8 @@ typedef struct
 
     FILE* index;
     FILE* paths;
-    uint next_dir_idx;
-    uint file_count;
+    uint32_t next_dir_idx;
+    uint32_t file_count;
 
     // NOTE: files and dirs have different lifetimes
     //-> So they need to have their own pool!
